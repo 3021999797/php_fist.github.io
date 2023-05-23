@@ -45,6 +45,22 @@ return [
             'driver' => 'jwt',
             'provider' => 'users',
         ],
+        'admin' => [
+            'driver' => 'jwt',
+            'provider' => 'admins',
+        ],
+        'school' => [
+            'driver' => 'jwt',
+            'provider' => 'schools',
+        ],
+        'race_person' => [
+            'driver' => 'jwt',
+            'provider' => 'race_persons',
+        ],
+        'race_type_name' => [
+            'driver' => 'jwt',
+            'provider' => 'race_type_names',
+        ],
     ],
 
     /*
@@ -67,9 +83,25 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ],
+            'model' => App\Models\Admin::class,
 
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+        'schools' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\School::class,
+        ],
+        'race_person' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\RacePerson::class,
+        ],
+        'race_type_names' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\RaceTypeName::class,
+        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
