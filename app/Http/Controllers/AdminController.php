@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddCompetitionItems;
 use App\Http\Requests\AdminLoginRequest;
+use App\Http\Requests\UpdateCompetitionItems;
+use App\Http\Requests\UpdateSchoolAccount;
 use App\Models\Admin;
 use App\Models\RacePerson;
 use App\Models\RaceTypeName;
@@ -37,7 +40,7 @@ class AdminController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request)
+    public function login(AdminLoginRequest $request)
     {
         $credentials = self::credentials($request);   //从前端获取账号密码
         $token = auth('admin')->attempt($credentials);   //获取token
@@ -103,7 +106,7 @@ class AdminController extends Controller
 
     }
     //添加比赛项目
-    public function add_competition_items(Request $request)
+    public function add_competition_items(AddCompetitionItems $request)
     {
         $count = RaceTypeName::check_project($request);   //检测账号密码是否存在
         if ($count == 0) {
@@ -117,7 +120,7 @@ class AdminController extends Controller
         }
     }
     //修改比赛项目
-    public function update_competition_items(Request $request)
+    public function update_competition_items(UpdateCompetitionItems $request)
     {
         $count = RaceTypeName::check_project($request);   //检测账号密码是否存在
         if ($count == 0) {
@@ -188,7 +191,7 @@ class AdminController extends Controller
         return json_fail('删除失败!', null, 100);
     }
     //修改学校账号
-    public function update_school_account(Request $request)
+    public function update_school_account(UpdateSchoolAccount $request)
     {
 
         $count=School::checknumber($request);

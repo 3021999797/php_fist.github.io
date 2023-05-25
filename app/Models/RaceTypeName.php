@@ -131,7 +131,7 @@ class RaceTypeName extends Model
     public static function back_c_name($request)
     {
         try{
-            $count = RaceTypeName::where('b_type',$request['b_type'])->groupBy('c_name')->get('c_name');
+            $count = RaceTypeName::select('c_id', 'c_name')->where('b_type',$request['b_type'])->get();
             return $count;
         }catch (\Exception $e) {
             logError("删除失败！", [$e->getMessage()]);

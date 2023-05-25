@@ -16,6 +16,7 @@ return [
     'defaults' => [
         'guard' => 'api',
         'passwords' => 'users',
+
     ],
 
     /*
@@ -47,20 +48,20 @@ return [
         ],
         'admin' => [
             'driver' => 'jwt',
-            'provider' => 'admins',
+            'provider' => 'admin',
         ],
         'school' => [
             'driver' => 'jwt',
-            'provider' => 'schools',
+            'provider' => 'users',
         ],
-        'race_person' => [
-            'driver' => 'jwt',
-            'provider' => 'race_persons',
-        ],
-        'race_type_name' => [
-            'driver' => 'jwt',
-            'provider' => 'race_type_names',
-        ],
+//        'race_person' => [
+//            'driver' => 'jwt',
+//            'provider' => 'race_persons',
+//        ],
+//        'race_type_name' => [
+//            'driver' => 'jwt',
+//            'provider' => 'race_type_names',
+//        ],
     ],
 
     /*
@@ -83,25 +84,22 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Admin::class,
-
-        ],
-        'admins' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Admin::class,
-        ],
-        'schools' => [
-            'driver' => 'eloquent',
             'model' => App\Models\School::class,
         ],
-        'race_person' => [
+
+        'admin' => [
             'driver' => 'eloquent',
-            'model' => App\Models\RacePerson::class,
+            'model' => App\Models\Admin::class,
         ],
-        'race_type_names' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\RaceTypeName::class,
-        ],
+
+//        'race_persons' => [
+//            'driver' => 'eloquent',
+//            'model' => App\Models\RacePerson::class,
+//        ],
+//        'race_type_names' => [
+//            'driver' => 'eloquent',
+//            'model' => App\Models\RaceTypeName::class,
+//        ],
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',

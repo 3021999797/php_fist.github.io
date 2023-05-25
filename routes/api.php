@@ -19,13 +19,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('admin')->group(function () {
     Route::post('login', 'AdminController@login');//管理员登录
     Route::post('registered', 'AdminController@registered');//注册
-    Route::get('test_01', 'AdminController@test_01')->middleware('jwt.role:admin','jwt.auth');//所有账号信息
+//    Route::get('test_01', 'AdminController@test_01')->middleware('jwt.role:admin','jwt.auth');//所有账号信息
 });
 
 Route::prefix('school')->group(function () {
     Route::post('login', 'SchoolController@login');//管理员登录
     Route::post('registered', 'SchoolController@registered');//注册
-    Route::get('test_01', 'AdminController@test_01')->middleware('jwt.role:school','jwt.auth');//所有账号信息
+//    Route::get('test_01', 'AdminController@test_01')->middleware('jwt.role:school','jwt.auth');//所有账号信息
 });
 //Route::get('admin/test_01', 'AdminController@test_01')->middleware('jwt.role:admin','jwt.auth');//所有账号信息
 Route::middleware('jwt.role:admin','jwt.auth')->prefix('admin')->group(function () {
@@ -43,7 +43,22 @@ Route::middleware('jwt.role:admin','jwt.auth')->prefix('admin')->group(function 
     Route::post('array_school_delete', 'AdminController@array_school_delete');//批量删除学校账号
     Route::post('update_school_account', 'AdminController@update_school_account');//修改学校账号
 });
-
+Route::middleware('jwt.role:user','jwt.auth')->prefix('school')->group(function (){
+//    Route::post('login','SchoolController@login');//学校登录
+    Route::post('judgment_first','SchoolController@judgment_first');//判断是否第一次进
+    Route::post('update','SchoolController@update');//第一次进入修改密码
+    Route::post('update_information','SchoolController@update_information');//修改比赛信息
+    Route::post('sign_up','SchoolController@sign_up');//比赛报名
+    Route::post('forget_password','SchoolController@forget_password');//忘记密码
+    Route::post('delete','SchoolController@delete');//删除比赛信息
+    Route::post('array_application','SchoolController@array_application');//批量报名
+    Route::post('array_delete','SchoolController@array_delete');//批量删除比赛信息
+    Route::post('application_state','SchoolController@application_state');//比赛状态按钮
+    Route::post('fuzzy_queries','SchoolController@fuzzy_queries');//模糊查询
+    Route::get('export_excel','ExcelController@export_excel');//导出excel
+//    Route::get('test_01', 'AdminController@test_01')->middleware('jwt.role:admin','jwt.auth');//所有账号信息
+});
 Route::get('export', 'AdminController@export');
 Route::post('back_b_type', 'TypeController@type_back_b_type');
 Route::post('back_c_name', 'TypeController@type_back_c_name');
+Route::post('receive_mailbox','SchoolController@receive_mailbox');//获取验证码按钮

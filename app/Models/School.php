@@ -30,12 +30,10 @@ class School extends Authenticatable implements JWTSubject
 
     public function getJWTCustomClaims()
     {
-        // TODO: Implement getJWTCustomClaims() method.
-        return ['role'=>'school'];
+        return ['role'=>'user'];
     }
     public function getJWTIdentifier()
     {
-        // TODO: Implement getJWTIdentifier() method.
         return $this->getKey();
     }
 
@@ -147,6 +145,81 @@ class School extends Authenticatable implements JWTSubject
             return false;
         }
     }
+    public static function judgment($request)
+    {
+        $email="fist@fish.com";
+//    $result=self::select("school_email")->where('id',$request['id'])->first();
+//    dd($result);
+//        $result=DB::table('school')->where('school_email',$email)->first();
+        $result=School::where('account',$request['account'])->get();
+        $judgment_email=$result[0]->school_email;
+        if($judgment_email==$email)
+            return 0;
+        else
+            return 1;
+    }
+    public static function judegment_email($request)
+    {
+        $random=rand(100000,999999);
+        $email=$request->input("school_email");
+        Mail::raw("您的验证码是:".$random, function($message) use ($email) {
+            $message->to($email)->subject('验证码');
+        });
+//            $email = $request['school_email'];//前端获取邮箱
+//            $code = rand(1000, 9999);//产生随机数
+//            Mail::raw('验证码为:' . $code, function ($message) {
+//                $message->subject('验证码提醒');
+//                $message->to('$email');
+//            });//发送邮箱
+        return bcrypt($random);
+    }
+    public static function update_email_password($request)
+    {
+        try{
+            $project=self::find($request['id']);//找到学校对应id
+            $project->school_email=$request['school_email'];
+            $project->password=bcrypt($request['password']);
+            $project->save();
+            return $project->id ?
+                $project->id:
+                false;
+        }catch (\Exception $e) {
+            logError('修改密码失败!', [$e->getMessage()]);
+            die($e->getMessage());
+            return false;
+        }
+    }
+    public static function update_password($request)
+    {
+        try{
+//            $username=$request->input("account");
+//            $account=DB::select("select id from school where account = '$username'");
+//            $count=self::find($account);
+//            $count->password=bcrypt($request['password']);
+//            $count->save();
+//            $count = self::select("id")
+//                ->where('account',$request['account'])
+//                ->get();
+////            $count=School::select($request['account']);
+////            return $count;
+
+            $project=self::where('school_email',$request['school_email'])
+                ->update(['password'=>bcrypt($request['password'])]);
+//            $project->password=bcrypt($request['password']);
+//            $project->save();
+            return $project?
+                $project:
+                false;
+
+        } catch (\Exception $e) {
+            logError('修改密码失败!', [$e->getMessage()]);
+            die($e->getMessage());
+            return false;
+        }
+    }
+
+
+
 
 
 
