@@ -161,7 +161,7 @@ class School extends Authenticatable implements JWTSubject
     public static function judegment_email($request)
     {
         $random=rand(100000,999999);
-        $email=$request->input("school_email");
+        $email=$request->input("email");
         Mail::raw("您的验证码是:".$random, function($message) use ($email) {
             $message->to($email)->subject('验证码');
         });
@@ -218,7 +218,29 @@ class School extends Authenticatable implements JWTSubject
         }
     }
 
-
+//判断邮箱是否和数据库中相等
+    public static function check_email($request)
+    {
+        try {
+            $result=School::where('account',$request['account'])->get();
+            $email=$request['email'];
+            if($result[0]->school_email===$email)
+            {
+                $random=rand(100000,999999);
+                Mail::raw("您的验证码是:".$random, function($message) use ($email) {
+                    $message->to($email)->subject('验证码');
+                });
+                return bcrypt($random);
+            }
+            else{
+                return false;
+            }
+        }catch (\Exception $e) {
+            logError('修改密码失败!', [$e->getMessage()]);
+            die($e->getMessage());
+            return false;
+        }
+    }
 
 
 

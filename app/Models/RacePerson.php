@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class RacePerson extends Model
 {
@@ -58,7 +59,7 @@ class RacePerson extends Model
             $project=self::create([
 //                'u_id'=>$request["u_id"],
                 'school_name'=>$result[0]->school_name,
-                'name'=>$request['name'],
+                'name'=>$request['username'],
                 'gender'=>$request['gender'],
                 'age'=>$request['age'],
                 'ethnic_groups'=>$request['ethnic_groups'],
@@ -142,7 +143,7 @@ class RacePerson extends Model
     public static function change_state($request)
     {
         try {
-            $result=self::where(['race_id'=>$request['race_id']])->first();
+            $result=self::where(['u_id'=>$request['u_id']])->first();
             $result->rise_state=$request['rise_state'];
             $result->save();
             return $result->save() ?
@@ -180,6 +181,72 @@ class RacePerson extends Model
         else
             return false;
     }
+    public static function look_for_all($id)
+    {
+    try {
+        $result=self::select('name as 姓名','gender as 性别','age as 年龄','ethnic_groups as 民族',
+            'job_profession as 职业','telephone_number as 电话号码','identity_card as 身份证',
+            'participating_group as 参赛组','degree as 学历','instructor as 指导老师',
+            'a_type as 比赛大类','b_type as 比赛类型','c_name as 比赛项目')
+            ->join('race_type_name','race_person.race_id','=','race_type_name.c_id')
+            ->where('race_id',$id)
+            ->get();
+        return $result;
+    }catch (\Exception $e) {
+        logError('查询失败!', [$e->getMessage()]);
+        return false;
+    }
+}
 
+//判断用户是否存在
+    public static function check_uesr($request)
+    {
+        try {
+            $project=$request['u_id'];
+            return $project;
+        }catch (\Exception $e) {
+            logError('不存在!', [$e->getMessage()]);
+            return false;
+        }
+    }
+
+    //判断邮箱是否和数据库中相等
+    public static function check_email($request)
+    {
+        try {
+            $result=School::where('account',$request['account'])->get();
+            $email=$request['school_email'];
+            if($result[0]->school_email===$email)
+            {
+                $random=rand(100000,999999);
+                Mail::raw("您的验证码是:".$random, function($message) use ($email) {
+                    $message->to($email)->subject('验证码');
+                });
+                return bcrypt($random);
+            }
+            else{
+                return false;
+            }
+        }catch (\Exception $e) {
+            logError('修改密码失败!', [$e->getMessage()]);
+            die($e->getMessage());
+            return false;
+        }
+    }
+
+    public static function look_for_details($school_name)
+    {
+        try {
+            $school = self::select('name as 姓名', 'participating_group as 学生组/教师组', 'degree as 学历',
+                'telephone_number as 联系电话','rise_state as 状态','a_type as 比赛类型','c_name as 比赛项目')
+                ->join('race_type_name','race_person.race_id','=','race_type_name.c_id')
+                ->where('school_name',$school_name)
+                ->get();
+            return $school;
+        }catch (\Exception $e) {
+            logError('不存在!', [$e->getMessage()]);
+            return false;
+        }
+    }
 
 }

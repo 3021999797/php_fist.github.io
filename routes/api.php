@@ -56,9 +56,13 @@ Route::middleware('jwt.role:user','jwt.auth')->prefix('school')->group(function 
     Route::post('application_state','SchoolController@application_state');//比赛状态按钮
     Route::post('fuzzy_queries','SchoolController@fuzzy_queries');//模糊查询
     Route::get('export_excel','ExcelController@export_excel');//导出excel
+    Route::post('receive_mailbox','SchoolController@receive_mailbox');//获取验证码按钮
+    Route::post('forget_password_email','SchoolController@forget_password_email');//忘记密码的获取验证码
+    Route::post('details_page','SchoolController@details_page');//详情页面
 //    Route::get('test_01', 'AdminController@test_01')->middleware('jwt.role:admin','jwt.auth');//所有账号信息
 });
 Route::get('export', 'AdminController@export');
 Route::post('back_b_type', 'TypeController@type_back_b_type');
 Route::post('back_c_name', 'TypeController@type_back_c_name');
 Route::post('receive_mailbox','SchoolController@receive_mailbox');//获取验证码按钮
+Route::post('detail','SchoolController@detail');//详情
