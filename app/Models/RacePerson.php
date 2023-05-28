@@ -271,4 +271,17 @@ class RacePerson extends Model
             return false;
         }
     }
+    //删除比赛人员信息
+    public static function delete_person($request)
+    {
+        try{
+            $count = self::where('u_id',$request['u_id'])->update(['rise_state' => 0]);
+            return $count;
+        }catch (\Exception $e) {
+            logError("账号查询失败！", [$e->getMessage()]);
+            return false;
+        }
+    }
+
+
 }

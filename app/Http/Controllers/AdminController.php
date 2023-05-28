@@ -148,6 +148,14 @@ class AdminController extends Controller
                 json_success('删除失败!该项目已经存在！', null, 100);
         }
     }
+    //删除比赛信息
+    public function delete_person_information(Request $request)
+    {
+            $count = RacePerson::delete_person($request);
+            return  $count?
+                json_success('删除成功!', $count, 200) :
+                json_fail('删除失败!', $count, 100);
+    }
     //模糊查询比赛项目
     public function type_fuzzy_queries(Request $request)
     {    $project = RaceTypeName::project_search($request);

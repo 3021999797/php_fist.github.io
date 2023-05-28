@@ -161,19 +161,40 @@ class School extends Authenticatable implements JWTSubject
     }
     public static function judegment_email($request)
     {
+        // 生成一个随机密钥
+        $key = random_bytes(32);// 256位密钥
+        // 待加密的数据
         $random=rand(100000,999999);
+        // 生成一个随机的IV（Initialization Vector）
+        $iv = random_bytes(16); // 128位IV
+        // 使用 AES 加密算法和生成的密钥、IV进行加密
+        $encryptedData = openssl_encrypt($random, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
         $email=$request->input("email");
         Mail::raw("您的验证码是:".$random, function($message) use ($email) {
             $message->to($email)->subject('验证码');
         });
-//            $email = $request['school_email'];//前端获取邮箱
-//            $code = rand(1000, 9999);//产生随机数
-//            Mail::raw('验证码为:' . $code, function ($message) {
-//                $message->subject('验证码提醒');
-//                $message->to('$email');
-//            });//发送邮箱
-        return bcrypt($random);
+        $response = [
+            'encryptedData' => base64_encode($encryptedData),
+            'key' => base64_encode($key),
+            'iv' => base64_encode($iv)
+        ];
+        return $response;
     }
+//    public static function judegment_email($request)
+//    {
+//        $random=rand(100000,999999);
+//        $email=$request->input("email");
+//        Mail::raw("您的验证码是:".$random, function($message) use ($email) {
+//            $message->to($email)->subject('验证码');
+//        });
+////            $email = $request['school_email'];//前端获取邮箱
+////            $code = rand(1000, 9999);//产生随机数
+////            Mail::raw('验证码为:' . $code, function ($message) {
+////                $message->subject('验证码提醒');
+////                $message->to('$email');
+////            });//发送邮箱
+//        return bcrypt($random);
+//    }
     public static function update_email_password($request)
     {
         try{
@@ -224,18 +245,27 @@ class School extends Authenticatable implements JWTSubject
     {
         try {
             $result=School::where('account',$request['account'])->get();
-                $email=$request['email'];
-                if($result[0]->school_email===$email)
-                {
-                    $random=rand(100000,999999);
-                    Mail::raw("您的验证码是:".$random, function($message) use ($email) {
-                        $message->to($email)->subject('验证码');
-                    });
-                    return bcrypt($random);
-                }
-                else{
-                    return false;
-                }
+            $email=$request['email'];
+            if($result[0]->school_email===$email)
+            {
+                $key = random_bytes(32);
+                $random=rand(100000,999999);
+                // 生成一个随机的IV（Initialization Vector）
+                $iv = random_bytes(16); // 128位IV
+                $encryptedData = openssl_encrypt($random, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
+                Mail::raw("您的验证码是:".$random, function($message) use ($email) {
+                    $message->to($email)->subject('验证码');
+                });
+                $response = [
+                    'encryptedData' => base64_encode($encryptedData),
+                    'key' => base64_encode($key),
+                    'iv' => base64_encode($iv)
+                ];
+                return $response;
+            }
+            else{
+                return false;
+            }
         }catch (\Exception $e) {
             logError('修改密码失败!', [$e->getMessage()]);
             die($e->getMessage());
