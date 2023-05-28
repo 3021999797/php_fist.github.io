@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class School extends Authenticatable implements JWTSubject
@@ -223,18 +224,18 @@ class School extends Authenticatable implements JWTSubject
     {
         try {
             $result=School::where('account',$request['account'])->get();
-            $email=$request['email'];
-            if($result[0]->school_email===$email)
-            {
-                $random=rand(100000,999999);
-                Mail::raw("您的验证码是:".$random, function($message) use ($email) {
-                    $message->to($email)->subject('验证码');
-                });
-                return bcrypt($random);
-            }
-            else{
-                return false;
-            }
+                $email=$request['email'];
+                if($result[0]->school_email===$email)
+                {
+                    $random=rand(100000,999999);
+                    Mail::raw("您的验证码是:".$random, function($message) use ($email) {
+                        $message->to($email)->subject('验证码');
+                    });
+                    return bcrypt($random);
+                }
+                else{
+                    return false;
+                }
         }catch (\Exception $e) {
             logError('修改密码失败!', [$e->getMessage()]);
             die($e->getMessage());
@@ -242,7 +243,19 @@ class School extends Authenticatable implements JWTSubject
         }
     }
 
-
+    public static function check_user($request)
+    {
+        try {
+            $project=self::where('account',$request['account'])->count();
+            return $project ?
+                $project:
+                false;
+        }catch (\Exception $e) {
+            logError('修改密码失败!', [$e->getMessage()]);
+            die($e->getMessage());
+            return false;
+        }
+    }
 
 
 }

@@ -133,28 +133,33 @@ class SchoolController extends Controller
     public function sign_up(RaceSignUp $request)
     {
         //检查是否有这个比赛id
-        $check=RacePerson::check_project($request);
-        if($check)
-        {
-            json_fail('用户已报名',null,100);
+        try {
+                $project=RacePerson::add_person($request);
+                if($project)
+                {
+                    return json_success('报名成功',$project,200);
+                }else{
+                    return json_fail('报名失败',null,100);
+                }
+        }catch (\Exception $e) {
+            logError('报名信息提交失败!', [$e->getMessage()]);
+            return json_fail('报名信息提交失败!','false', 100 );
         }
-        else{
-            $project=RacePerson::add_person($request);
-            if($project=='1')
-            {
-                return json_success('报名成功',$project,200);
-            }else{
-                return json_fail('报名失败',null,100);
-            }
-        }
+
 
     }
     //删除比赛信息
     public function delete(Request $request)
     {
-        return RacePerson::delete_information($request) ?
-            json_success('删除成功!', null, 200) :
-            json_fail('删除失败', null, 100);
+        try {
+                return RacePerson::delete_information($request) ?
+                    json_success('删除成功!', null, 200) :
+                    json_fail('删除失败', null, 100);
+        }catch (\Exception $e) {
+            logError('删除信息提交失败!', [$e->getMessage()]);
+            return json_fail('删除信息提交失败!','false', 100 );
+        }
+
     }
 //批量报名
     public function array_application(Request $request)
@@ -166,8 +171,8 @@ class SchoolController extends Controller
             }
             return json_success('报名信息提交成功!', 'true', 200);
         }catch (\Exception $e) {
-            logError('报名信息提交失败!', [$e->getMessage()]);
-            return json_fail('报名信息提交失败!','false', 100 );
+            logError('删除信息提交失败!', [$e->getMessage()]);
+            return json_fail('删除信息提交失败!','false', 100 );
         }
 
     }
@@ -203,12 +208,13 @@ class SchoolController extends Controller
     {
         try {
             $check=RacePerson::check_uesr($request);
+
             if($check)
             {
                 $id=$request['u_id'];
                 $project=RacePerson::where(['u_id'=>$id])->first();
-                $race_id=RacePerson::where(['u_id'=>$id])->get();
-                $project->name=$request['name'];
+                $race_id=RaceTypeName::where(['c_name'=>$request['c_name']])->get();
+                $project->name=$request['username'];
                 $project->gender=$request['gender'];
                 $project->age=$request['age'];
                 $project->ethnic_groups=$request['ethnic_groups'];
@@ -218,29 +224,25 @@ class SchoolController extends Controller
                 $project->participating_group=$request['participating_group'];
                 $project->degree=$request['degree'];
                 $project->instructor=$request['instructor'];
+                $project->race_id=$race_id[0]->c_id;
                 $project->save();
-                $result=RaceTypeName::where(['c_id'=>$race_id[0]->race_id])->first();
-                $result->a_type=$request['a_type'];
-                $result->b_type=$request['b_type'];
-                $result->c_name=$request['c_name'];
-                $result->save();
-                return $project&&$result ?
-                    json_success('修改成功', $project&&$result, 200) :
+                return $project->save()?
+                    json_success('修改成功', $project->save(), 200) :
                     json_fail('修改失败', null, 100);
             }
             else{
-                json_fail('用户不存在',null,100);
+                return json_fail('用户不存在',null,100);
             }
         } catch (\Exception $e) {
             logError('失败!', [$e->getMessage()]);
-            return json_fail('失败!', 'false', 100);
+            return json_fail('失败!', null, 100);
         }
     }
 //模糊查询
     public function fuzzy_queries(Request $request)
     {
         try {
-            $project = RacePerson::dim_school($request['data']);
+            $project = RacePerson::dim_school($request);
            return $project ?
                json_success('查询成功',$project,200):
                json_fail('查询失败',null,100);
@@ -294,10 +296,11 @@ class SchoolController extends Controller
     }
 
 
-//忘记密码的获取验证码
+//登录后的修改密码的获取验证码
     public function forget_password_email(ForgetPasswordEmail $request)
     {
         try {
+            $check=School::check_user($request);
             $project=School::check_email($request);
             return $project ?
                 json_success('发送成功',$project,200):
@@ -322,4 +325,33 @@ class SchoolController extends Controller
         }
     }
 
+    //忘记密码的获取验证码
+    public function forget_password_email_notoken(ForgetPasswordEmail $request)
+    {
+        try {
+            $check=School::check_user($request);
+            $project=School::check_email($request);
+            return $project ?
+                json_success('发送成功',$project,200):
+                json_fail('邮箱错误',null,100);
+
+        }catch (\Exception $e) {
+            return json_fail('失败!', null, 100);
+        }
+    }
+    //忘记密码
+    public function forget_password_notoken(ForgetPassword $request)
+    {
+        $account=School::checknumber($request);
+        if($account)
+        {
+            $project=School::update_password($request);
+            return $project ?
+                json_success('修改密码成功!', $project, 200) :
+                json_fail('修改密码失败!', null, 100);
+        }
+        else{
+            json_fail('账号不存在！',null,100);
+        }
+    }
 }

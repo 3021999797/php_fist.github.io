@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class ReceiveMailBox extends FormRequest
+class ItemQueryButton extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,14 +26,8 @@ class ReceiveMailBox extends FormRequest
     public function rules()
     {
         return [
-            'email'=>'required|email',
-        ];
-    }
-    public function messages()
-    {
-        return [
-            'email.required'=>'邮箱不能为空',
-            'email.email'=>'邮箱格式不正确',
+            'a_type'=>'required',
+            'b_type'=>'required',
         ];
     }
     protected function failedValidation(Validator $validator)

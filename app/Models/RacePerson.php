@@ -32,6 +32,19 @@ class RacePerson extends Model
         }
     }
 
+    public static function check_user_project($request)
+    {
+        try{
+            $project = self::where('race_id',$request['race_id'])->count();
+            return $project ?
+                $project:
+                false;
+        }catch (\Exception $e) {
+            logError("账号查询失败！", [$e->getMessage()]);
+            return false;
+        }
+    }
+
     //比赛的信息模糊查询
     public static function people_search($request)
     {
@@ -49,13 +62,8 @@ class RacePerson extends Model
     {
         try{
 
-//            $check=RacePerson::check_project($request);
-//            if($check)
-//            {
-//                return 0;
-//            }
             $result=School::where('id',$request['school_id'])->get();
-//            return $result;
+            $race_id=RaceTypeName::where('c_name',$request['c_name'])->get();
             $project=self::create([
 //                'u_id'=>$request["u_id"],
                 'school_name'=>$result[0]->school_name,
@@ -69,20 +77,13 @@ class RacePerson extends Model
                 'participating_group'=>$request['participating_group'],
                 'degree'=>$request['degree'],
                 'instructor'=>$request['instructor'],
-                'race_id'=>$request['race_id'],
-            ])->save();
-            self::where('race_id',$request['race_id'])->update(['rise_state'=>'1']);
-            $result=RaceTypeName::create([
-                'c_id'=>$request['race_id'],
-                'a_type'=>$request['a_type'],
-                'b_type'=>$request['b_type'],
-                'c_name'=>$request['c_name'],
-            ])->save();
-
-            if($project&&$result)
-                return 1;
+                'race_id'=>$race_id[0]->c_id,
+            ])->u_id;
+            self::where('u_id',$project)->update(['rise_state'=>'1']);
+            if($project)
+                return $project;
             else
-                return 0;
+                return false;
 
 //           $project->school_name=$request["school_name"];
 //            $project->name=$request['name'];
@@ -107,8 +108,9 @@ class RacePerson extends Model
     {
         try {
             $school = self::select('name as 姓名', 'participating_group as 学生组/教师组', 'degree as 学历',
-                'telephone_number as 联系电话','a_type as 比赛类型','c_name as 比赛项目')
+                'telephone_number as 联系电话','a_type as 比赛类型','b_type as 比赛具体类型','c_name as 比赛项目')
                 ->join('race_type_name','race_person.race_id','=','race_type_name.c_id')
+                ->where('school_name',$request['school_name'])
                 ->where('rise_state', '1')
                 ->get();
 //            $c_id=self::where('school_name',$request['school_name'])->get();
@@ -120,19 +122,26 @@ class RacePerson extends Model
             return false;
         }
     }
-    public static function dim_school($data)
+    public static function dim_school($request)
     {
         try {
-            $result=RacePerson::select("name as 姓名","participating_group as 参赛组","degree as 学历",
-                "telephone_number as 联系电话","a_type as 比赛类型","c_name as 比赛项目" )
-//                ->where('school_name','like','%'.$name.'%')
-                ->where('name','like','%'.$data.'%')
-                ->orwhere('participating_group','like','%'.$data.'%')
-                ->orwhere('degree','like','%'.$data.'%')
-                ->orwhere('telephone_number','like','%'.$data.'%')
+            $result=RacePerson::select("name","participating_group","degree",
+                    "telephone_number","a_type",'b_type',"c_name" )
+                ->where('school_name',$request['school_name'])
+                ->where('name','like','%'.$request['data'].'%')
+                ->orwhere('participating_group','like','%'.$request['data'].'%')
+                ->where('school_name',$request['school_name'])
+                ->orwhere('degree','like','%'.$request['data'].'%')
+                ->where('school_name',$request['school_name'])
+                ->orwhere('telephone_number','like','%'.$request['data'].'%')
+                ->where('school_name',$request['school_name'])
                 ->join('race_type_name','race_person.race_id','=','race_type_name.c_id')
-                ->orwhere('a_type','like','%'.$data.'%')
-                ->orwhere('c_name','like','%'.$data.'%')
+                ->orwhere('a_type','like','%'.$request['data'].'%')
+                ->where('school_name',$request['school_name'])
+                ->orwhere('b_type','like','%'.$request['data'].'%')
+                ->where('school_name',$request['school_name'])
+                ->orwhere('c_name','like','%'.$request['data'].'%')
+                ->where('school_name',$request['school_name'])
                 ->get();
             return $result;
         }catch (\Exception $e) {
@@ -184,12 +193,12 @@ class RacePerson extends Model
     public static function look_for_all($id)
     {
     try {
-        $result=self::select('name as 姓名','gender as 性别','age as 年龄','ethnic_groups as 民族',
-            'job_profession as 职业','telephone_number as 电话号码','identity_card as 身份证',
-            'participating_group as 参赛组','degree as 学历','instructor as 指导老师',
-            'a_type as 比赛大类','b_type as 比赛类型','c_name as 比赛项目')
+        $result=self::select('name as username','gender','age','ethnic_groups',
+            'job_profession','telephone_number','identity_card',
+            'participating_group','degree','instructor',
+            'a_type','b_type','c_name')
             ->join('race_type_name','race_person.race_id','=','race_type_name.c_id')
-            ->where('race_id',$id)
+            ->where('u_id',$id)
             ->get();
         return $result;
     }catch (\Exception $e) {
@@ -202,8 +211,10 @@ class RacePerson extends Model
     public static function check_uesr($request)
     {
         try {
-            $project=$request['u_id'];
-            return $project;
+            $project=self::where('u_id',$request['u_id'])->count();
+            return $project ?
+                $project:
+                false;
         }catch (\Exception $e) {
             logError('不存在!', [$e->getMessage()]);
             return false;
@@ -237,8 +248,9 @@ class RacePerson extends Model
     public static function look_for_details($school_name)
     {
         try {
-            $school = self::select('name as 姓名', 'participating_group as 学生组/教师组', 'degree as 学历',
-                'telephone_number as 联系电话','rise_state as 状态','a_type as 比赛类型','c_name as 比赛项目')
+            $school = self::select('u_id','name', 'participating_group', 'degree',
+                'telephone_number','rise_state','a_type','b_type',
+                'c_name')
                 ->join('race_type_name','race_person.race_id','=','race_type_name.c_id')
                 ->where('school_name',$school_name)
                 ->get();

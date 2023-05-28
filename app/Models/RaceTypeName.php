@@ -138,4 +138,17 @@ class RaceTypeName extends Model
             return false;
         }
     }
+    //查询比赛项目按钮
+    public static function query_button($request)
+    {
+        try{
+            $count = RaceTypeName::where('a_type',$request['a_type'])
+                ->where('b_type',$request['b_type'])
+                ->get();
+            return $count;
+        }catch (\Exception $e) {
+            logError("删除失败！", [$e->getMessage()]);
+            return false;
+        }
+    }
 }

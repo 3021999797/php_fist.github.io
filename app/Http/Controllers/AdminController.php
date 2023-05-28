@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddCompetitionItems;
 use App\Http\Requests\AdminLoginRequest;
+use App\Http\Requests\ItemQueryButton;
 use App\Http\Requests\UpdateCompetitionItems;
 use App\Http\Requests\UpdateSchoolAccount;
 use App\Models\Admin;
@@ -149,19 +150,24 @@ class AdminController extends Controller
     }
     //模糊查询比赛项目
     public function type_fuzzy_queries(Request $request)
-    {
-        return RaceTypeName::project_search($request);
+    {    $project = RaceTypeName::project_search($request);
+        return  json_success('查询成功',$project,200);
     }
     //模糊查询学校
     public function find_school_fuzzy_queries(Request $request)
     {
-        return School::account_search($request);
+        $project = School::account_search($request);
+        return  json_success('查询成功',$project,200);
     }
 
     //批量删除比赛类型
     public function array_delete_competition_items(Request $request)
     {
         $ids = $request->input('ids', []);
+        if(empty($ids)){
+            return
+                json_fail('删除失败!，没有选择要删除的数据', null, 100) ;
+        }
         $race=RaceTypeName::array_can_delete($ids);
         if($race->count() !=0){
             return
@@ -178,6 +184,10 @@ class AdminController extends Controller
     public function array_school_delete(Request $request)
     {
         $names = $request->input('names', []);
+        if(empty($names)){
+            return
+                json_fail('删除失败!，没有选择要删除的数据', null, 100) ;
+        }
         $race=School::array_can_delete($names);
         if($race->count() !=0){
             return
@@ -231,7 +241,11 @@ class AdminController extends Controller
     }
 
 
-
+    //查询比赛项目按钮
+    public function item_query_button(ItemQueryButton $request)
+    {    $project = RaceTypeName::query_button($request);
+        return  json_success('查询成功',$project,200);
+    }
 
 
 

@@ -42,6 +42,7 @@ Route::middleware('jwt.role:admin','jwt.auth')->prefix('admin')->group(function 
     Route::post('array_delete_competition_items', 'AdminController@array_delete_competition_items');//批量删除比赛项目
     Route::post('array_school_delete', 'AdminController@array_school_delete');//批量删除学校账号
     Route::post('update_school_account', 'AdminController@update_school_account');//修改学校账号
+    Route::post('item_query_button', 'AdminController@item_query_button');//查询比赛项目按钮
 });
 Route::middleware('jwt.role:user','jwt.auth')->prefix('school')->group(function (){
 //    Route::post('login','SchoolController@login');//学校登录
@@ -49,16 +50,16 @@ Route::middleware('jwt.role:user','jwt.auth')->prefix('school')->group(function 
     Route::post('update','SchoolController@update');//第一次进入修改密码
     Route::post('update_information','SchoolController@update_information');//修改比赛信息
     Route::post('sign_up','SchoolController@sign_up');//比赛报名
-    Route::post('forget_password','SchoolController@forget_password');//忘记密码
     Route::post('delete','SchoolController@delete');//删除比赛信息
     Route::post('array_application','SchoolController@array_application');//批量报名
     Route::post('array_delete','SchoolController@array_delete');//批量删除比赛信息
     Route::post('application_state','SchoolController@application_state');//比赛状态按钮
     Route::post('fuzzy_queries','SchoolController@fuzzy_queries');//模糊查询
-    Route::get('export_excel','ExcelController@export_excel');//导出excel
+    Route::post('export_excel','SchoolController@export_excel');//导出excel
     Route::post('receive_mailbox','SchoolController@receive_mailbox');//获取验证码按钮
-    Route::post('forget_password_email','SchoolController@forget_password_email');//忘记密码的获取验证码
     Route::post('details_page','SchoolController@details_page');//详情页面
+    Route::post('forget_password','SchoolController@forget_password');//忘记密码
+    Route::post('forget_password_email','SchoolController@forget_password_email');//忘记密码的获取验证码
 //    Route::get('test_01', 'AdminController@test_01')->middleware('jwt.role:admin','jwt.auth');//所有账号信息
 });
 Route::get('export', 'AdminController@export');
@@ -66,3 +67,6 @@ Route::post('back_b_type', 'TypeController@type_back_b_type');
 Route::post('back_c_name', 'TypeController@type_back_c_name');
 Route::post('receive_mailbox','SchoolController@receive_mailbox');//获取验证码按钮
 Route::post('detail','SchoolController@detail');//详情
+Route::post('/school/forget_password_notoken','SchoolController@forget_password_notoken');//忘记密码
+Route::post('/school/forget_password_email_notoken','SchoolController@forget_password_email_notoken');//忘记密码的邮箱认证
+

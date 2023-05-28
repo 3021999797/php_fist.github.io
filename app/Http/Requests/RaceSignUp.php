@@ -52,9 +52,6 @@ class RaceSignUp extends FormRequest
             'participating_group'=>'required|string',
             'degree'=>'required|string|max:50',
             'instructor'=>'required|string|min:0|max:50',
-            'race_id'=>'required|integer',
-            'a_type'=>'required|string',
-            'b_type'=>'required|string',
             'c_name'=>'required|string',
         ];
     }
@@ -91,14 +88,8 @@ class RaceSignUp extends FormRequest
             'instructor.string'=>'名字只能为字符串',
             'instructor.min'=>'指导老师不能小于0个字符',
             'instructor.max'=>'指导老师不能超过50个字符',
-            'a_type.required'=>'比赛大类不能为空',
-            'a_type.string'=>'比赛大类只能为字符串',
-            'b_type.required'=>'比赛类型不能为空',
-            'b_type.string'=>'比赛类型只能为字符串',
             'c_name.required'=>'比赛项目不能为空',
             'c_name.string'=>'比赛项目只能为字符串',
-            'race_id.required'=>'比赛id不能为空',
-            'race_id.integer'=>'需为整形',
         ];
     }
     protected function failedValidation(Validator $validator)
