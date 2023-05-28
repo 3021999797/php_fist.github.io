@@ -43,6 +43,7 @@ Route::middleware('jwt.role:admin','jwt.auth')->prefix('admin')->group(function 
     Route::post('array_school_delete', 'AdminController@array_school_delete');//批量删除学校账号
     Route::post('update_school_account', 'AdminController@update_school_account');//修改学校账号
     Route::post('item_query_button', 'AdminController@item_query_button');//查询比赛项目按钮
+    Route::post('delete_match_information', 'AdminController@delete_match_information');//批量删除比赛信息
 });
 Route::middleware('jwt.role:user','jwt.auth')->prefix('school')->group(function (){
 //    Route::post('login','SchoolController@login');//学校登录

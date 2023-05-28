@@ -174,7 +174,7 @@ class AdminController extends Controller
                 json_fail('删除失败!比赛已经有人报名！', $race, 100);
         }
         $count = RaceTypeName::array_delete($ids);
-        if($count== count($ids)){
+        if($count== count($ids)&&$count!=0){
             return
                 json_success('删除成功!', $count, 200) ;
         }
@@ -194,7 +194,27 @@ class AdminController extends Controller
                 json_fail('删除失败!比赛已经有人报名！', $race, 100);
         }
         $count = School::array_delete($names);
-        if($count== count($names)){
+        if($count== count($names)&&$count!=0){
+            return
+                json_success('删除成功!', $count, 200) ;
+        }
+        return json_fail('删除失败!', null, 100);
+    }
+    //批量删除比赛信息
+    public function delete_match_information(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if(empty($ids)){
+            return
+                json_fail('删除失败!，没有选择要删除的数据', null, 100) ;
+        }
+//        $race=RaceTypeName::array_can_delete($ids);
+//        if($race->count() !=0){
+//            return
+//                json_fail('删除失败!比赛已经有人报名！', $race, 100);
+//        }
+        $count = RacePerson::delete_match($ids);
+        if($count== count($ids)&&$count!=0){
             return
                 json_success('删除成功!', $count, 200) ;
         }

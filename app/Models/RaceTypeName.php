@@ -116,6 +116,7 @@ class RaceTypeName extends Model
             return false;
         }
     }
+
     //返回b类比赛类型
     public static function back_b_type($request)
     {

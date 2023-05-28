@@ -260,5 +260,15 @@ class RacePerson extends Model
             return false;
         }
     }
-
+    //批量删除比赛信息
+    public static function delete_match($array = [])
+    {
+        try{
+            $count = self::whereIn('u_id',$array)->update(['rise_state' => 0]);
+            return $count;
+        }catch (\Exception $e) {
+            logError("删除失败！", [$e->getMessage()]);
+            return false;
+        }
+    }
 }
