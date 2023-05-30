@@ -84,14 +84,7 @@ class RaceTypeName extends Model
             return false;
         }
     }
-    public static function project_search($request)
-    {
-        $project = self::where('a_type', 'like', '%'.$request['search'].'%')
-            ->orWhere('b_type', 'like', '%'.$request['search'].'%')
-            ->orWhere('c_name', 'like', '%'.$request['search'].'%')
-            ->get();
-        return $project;
-    }
+
     //查看数组里的比赛能不能删
     public static function array_can_delete($array = [])
     {
@@ -152,4 +145,37 @@ class RaceTypeName extends Model
             return false;
         }
     }
+
+    //比赛类型模糊查询
+//    public static function project_search($request)
+//    {
+//        $project = self::where(function ($query) use ($request) {
+//            $query->where('a_type', 'like', '%' . $request['search'] . '%')
+//                ->orWhere('b_type', 'like', '%' . $request['search'] . '%')
+//                ->orWhere('c_name', 'like', '%' . $request['search'] . '%');
+//        })->orWhere('a_type',$request['a_type'] )
+//            ->orWhere('b_type',$request['b_type'] )
+//            ->get();
+//
+//
+//
+////        $project = self::orWhere('a_type', 'like' ,'%'.$request['a_type'].'%' )
+////            ->orWhere('b_type', 'like' ,'%'.$request['b_type'].'%' )
+////            ->orwhereRaw("a_type like ? or b_type like ? or c_name like ?",['%'.$request['search'].'%','%'.$request['search'].'%','%'.$request['search'].'%'])
+//////            ->Where('degree', 'like', '%'.$request['search_degree'].'%')
+////////            ->orWhere('instructor', 'like', '%'.$request['search'].'%')
+//////            ->Where('race_id', 'like', '%'.$request['search_race_id'].'%')
+//////            ->join('race_type_name','race_id','=','race_type_name.c_id')
+////////            ->select('race_person.*', 'race_type_name.*')
+////            ->get();
+//        return $project;
+//    }
+    public static function project_search($request)
+{
+    $project = self::where('a_type', 'like','%'.$request['search'].'%' )
+        ->orWhere('b_type', 'like','%'.$request['search'].'%' )
+        ->orWhere('c_name', 'like', '%'.$request['search'].'%')
+        ->get();
+    return $project;
+}
 }

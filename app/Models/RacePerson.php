@@ -125,8 +125,8 @@ class RacePerson extends Model
     public static function dim_school($request)
     {
         try {
-            $result=RacePerson::select("name","participating_group","degree",
-                    "telephone_number","a_type",'b_type',"c_name" )
+            $result=RacePerson::select("u_id","name","participating_group","degree",
+                    "telephone_number","rise_state","a_type",'b_type',"c_name" )
                 ->where('school_name',$request['school_name'])
                 ->where('name','like','%'.$request['data'].'%')
                 ->orwhere('participating_group','like','%'.$request['data'].'%')

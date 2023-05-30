@@ -340,6 +340,12 @@ class SchoolController extends Controller
         }
     }
     //忘记密码
+
+    /**
+     * @param ForgetPassword $request
+     * @return \Illuminate\Http\JsonResponse|void
+     *
+     */
     public function forget_password_notoken(ForgetPassword $request)
     {
         $account=School::checknumber($request);
